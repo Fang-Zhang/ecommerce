@@ -1,6 +1,7 @@
 const User = require("../models/user.model");
 const Order = require("../models/order.model");
 const Cart = require("../models/cart.model");
+const Product = require("../models/product.model");
 
 // create a new order showing total price of products and user details
 exports.createOrder = async (req, res, next) => {
@@ -40,6 +41,24 @@ exports.createOrder = async (req, res, next) => {
     // total price
     const total = (totalPrice + Number(commission)).toFixed(2);
 
+    //  track the number of times a product has been sold
+    const bulkOption = cart.products.map((item) => {
+      return {
+        updateOne: {
+          filter: { _id: item.product._id },
+          update: { $inc: { sales: +item.quantity } },
+        },
+      };
+    });
+
+    console.log(bulkOption);
+
+    // update the product quantity
+    const updated = await Product.bulkWrite(bulkOption, {});
+
+    console.log(updated);
+
+
     // create a new order
     const order = await new Order({
       user: _id,
@@ -71,3 +90,6 @@ exports.createOrder = async (req, res, next) => {
     next(error);
   }
 };
+
+
+

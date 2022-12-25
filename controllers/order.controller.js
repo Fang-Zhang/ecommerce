@@ -78,9 +78,9 @@ exports.createOrder = async (req, res, next) => {
 
     // clear the cart
     // clear the cart
-    await Cart.findOneAndDelete({
-      user: _id,
-    });
+    // await Cart.findOneAndDelete({
+    //   user: _id,
+    // });
 
     res.status(200).json({
       order,
